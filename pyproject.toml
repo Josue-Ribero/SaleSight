@@ -1,0 +1,32 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "salesight"
+version = "0.0.1"
+description = "This project is focused on making an ETL process with sales data to predict its behaviour in the future."
+authors = [
+  { name = "Josue Ribero Duarte \u0026 Stiven Posada Casadiego" },
+]
+
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    
+]
+requires-python = "~=3.13.0"
+
+
+[tool.ruff]
+line-length = 99
+src = ["salesight"]
+include = ["pyproject.toml", "salesight/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["salesight"]
+force-sort-within-sections = true
+
