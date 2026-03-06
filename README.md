@@ -59,3 +59,39 @@ This project is focused on making an ETL process with sales data to predict its 
 
 --------
 
+## 🔄 ETL Process Diagram
+
+```mermaid
+graph TD
+    subgraph Extraction
+        A[Kaggle API Auth] --> B[Download Sales Dataset ZIP]
+        B --> C[Extract ZIP to data/raw]
+        C --> D[Delete ZIP file]
+    end
+
+    subgraph Transformation
+        D --> E[Read CSV files]
+        E --> F[Concatenate DataFrames]
+        F --> G[Clean Data: Drop NaNs]
+        G --> H[Cast Numeric Types]
+        H --> I[Feature Engineering: Calculate Sales]
+        I --> J[DateTime Conversion]
+    end
+
+    subgraph Loading
+        J --> K[Save to processed_data.csv]
+        J --> L[Save to SQLite: ventas_procesadas.db]
+    end
+```
+
+## 📊 EDA Process Diagram
+
+```mermaid
+graph TD
+    A[Load Processed Data] --> B[Descriptive Analysis: describe]
+    B --> C[Time Series: Sales Trend]
+    C --> D[Product Analysis: Top Selling Items]
+    D --> E[Relational Analysis: Price vs Quantity]
+    E --> F[Outlier Detection: Box Plots]
+```
+
