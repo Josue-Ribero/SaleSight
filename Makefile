@@ -1,86 +1,71 @@
 #################################################################################
-# GLOBALS                                                                       #
+# GLOBALES                                                                       #
 #################################################################################
 
 PROJECT_NAME = SaleSight
-PYTHON_VERSION = 3.13
-PYTHON_INTERPRETER = python
+# UV se encarga de la versión de python automáticamente
+PYTHON_INTERPRETER = uv run salesight
 
 #################################################################################
-# COMMANDS                                                                      #
+# COMANDOS                                                                      #
 #################################################################################
 
-
-## Install Python dependencies
+## Instalar dependencias y sincronizar proyecto con UV
 .PHONY: requirements
 requirements:
-	$(PYTHON_INTERPRETER) -m pip install -U pip
-	$(PYTHON_INTERPRETER) -m pip install -r requirements.txt
-	
+	uv sync
 
-
-
-## Delete all compiled Python files
+## Limpiar archivos compilados y cachés
 .PHONY: clean
 clean:
 	find . -type f -name "*.py[co]" -delete
 	find . -type d -name "__pycache__" -delete
+	rm -rf .pytest_cache
+	rm -rf .ruff_cache
+	rm -rf .venv
 
-
-## Lint using ruff (use `make format` to do formatting)
+## Revisar estilo con ruff a través de UV
 .PHONY: lint
 lint:
-	ruff format --check
-	ruff check
+	uv run ruff format --check
+	uv run ruff check
 
-## Format source code with ruff
+## Aplicar formato automático con ruff
 .PHONY: format
 format:
-	ruff check --fix
-	ruff format
+	uv run ruff check --fix
+	uv run ruff format
 
-
-
-## Run tests
+## Ejecutar tests unitarios con UV
 .PHONY: test
 test:
-	python -m pytest tests
+	uv run pytest tests
 
-
-## Set up Python interpreter environment
+## Crear/Sincronizar entorno virtual con UV
 .PHONY: create_environment
 create_environment:
-	@bash -c "if [ ! -z `which virtualenvwrapper.sh` ]; then source `which virtualenvwrapper.sh`; mkvirtualenv $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER); else mkvirtualenv.bat $(PROJECT_NAME) --python=$(PYTHON_INTERPRETER); fi"
-	@echo ">>> New virtualenv created. Activate with:\nworkon $(PROJECT_NAME)"
-	
-
-
+	uv sync
+	@echo ">>> Proyecto sincronizado con UV. El entorno virtual está en .venv"
 
 #################################################################################
-# PROJECT RULES                                                                 #
+# REGLAS DEL PROYECTO                                                           #
 #################################################################################
 
-
-## Make dataset
+## Ejecutar Pipeline ETL completo (Extraer, Transformar/EDA, Cargar)
 .PHONY: data
-data: requirements
-	$(PYTHON_INTERPRETER) salesight/dataset.py
+data:
+	$(PYTHON_INTERPRETER) --modo completo
 
+## Generar Reporte Visual (EDA) desde la base de datos
+.PHONY: eda
+eda:
+	$(PYTHON_INTERPRETER) --modo reporte
 
 #################################################################################
-# Self Documenting Commands                                                     #
+# Ayuda                                                                         #
 #################################################################################
 
 .DEFAULT_GOAL := help
 
-define PRINT_HELP_PYSCRIPT
-import re, sys; \
-lines = '\n'.join([line for line in sys.stdin]); \
-matches = re.findall(r'\n## (.*)\n[\s\S]+?\n([a-zA-Z_-]+):', lines); \
-print('Available rules:\n'); \
-print('\n'.join(['{:25}{}'.format(*reversed(match)) for match in matches]))
-endef
-export PRINT_HELP_PYSCRIPT
-
 help:
-	@$(PYTHON_INTERPRETER) -c "${PRINT_HELP_PYSCRIPT}" < $(MAKEFILE_LIST)
+	@uv run python -c "import re, sys; lines = '\n'.join([line for line in sys.stdin]); matches = re.findall(r'\n## (.*)\n[\s\S]+?\n([a-zA-Z_-]+):', lines); print('Reglas disponibles:\n'); print('\n'.join(['{:25}{}'.format(*reversed(match)) for match in matches]))" < $(MAKEFILE_LIST)

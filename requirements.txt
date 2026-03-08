@@ -67,3 +67,6 @@ tzdata==2025.3
 urllib3==2.6.3
 wcwidth==0.6.0
 webencodings==0.5.1
+loguru
+typer
+python-dotenv

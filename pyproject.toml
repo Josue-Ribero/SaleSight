@@ -1,22 +1,40 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
 [project]
 name = "salesight"
 version = "0.0.1"
 description = "This project is focused on making an ETL process with sales data to predict its behaviour in the future."
 authors = [
-  { name = "Josue Ribero Duarte \u0026 Stiven Posada Casadiego" },
+  { name = "Josue Ribero Duarte & Stiven Posada Casadiego" },
 ]
-
 readme = "README.md"
+requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
-    
 ]
-requires-python = "~=3.13.0"
+dependencies = [
+    "loguru",
+    "typer",
+    "python-dotenv",
+    "pandas",
+    "matplotlib",
+    "seaborn",
+    "kaggle",
+    "tqdm",
+    "requests",
+    "pyyaml",
+    "click",
+    "scikit-learn",
+    "sqlite3-api; python_version < '3.12'",
+]
 
+[project.scripts]
+salesight = "salesight.pipeline.main:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["salesight"]
 
 [tool.ruff]
 line-length = 99
@@ -24,9 +42,8 @@ src = ["salesight"]
 include = ["pyproject.toml", "salesight/**/*.py"]
 
 [tool.ruff.lint]
-extend-select = ["I"]  # Add import sorting
+extend-select = ["I"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["salesight"]
 force-sort-within-sections = true
-
