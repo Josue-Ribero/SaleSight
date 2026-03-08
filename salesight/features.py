@@ -4,7 +4,7 @@ from pathlib import Path
 from loguru import logger
 import typer
 from salesight.config import datos_procesados, NOMBRE_DB
-from salesight.dataset import obtener_datos_raw, guardar_datos_db
+from salesight.dataset import obtener_datos_raw
 
 # Configuración de la CLI
 app = typer.Typer()
