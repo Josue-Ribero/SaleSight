@@ -1,29 +1,57 @@
+# Se importan las librerías que se usarán en la transformación
+import pandas as pd
 from pathlib import Path
-
 from loguru import logger
-from tqdm import tqdm
 import typer
+from salesight.config import datos_procesados, NOMBRE_DB
+from salesight.dataset import obtener_datos_raw, guardar_datos_db
 
-from salesight.config import PROCESSED_DATA_DIR
-
+# Configuración de la CLI
 app = typer.Typer()
 
-
+# Conversión de función a comando CLI
 @app.command()
-def main(
-    # ---- REPLACE DEFAULT PATHS AS APPROPRIATE ----
-    input_path: Path = PROCESSED_DATA_DIR / "dataset.csv",
-    output_path: Path = PROCESSED_DATA_DIR / "features.csv",
-    # -----------------------------------------
+def procesar_caracteristicas(
+    archivo_raw: str = "new_retail_data.csv"
 ):
-    # ---- REPLACE THIS WITH YOUR OWN CODE ----
-    logger.info("Generating features from dataset...")
-    for i in tqdm(range(10), total=10):
-        if i == 5:
-            logger.info("Something happened for iteration 5.")
-    logger.success("Features generation complete.")
-    # -----------------------------------------
+    """
+    Fase de Transformación (T) que retorna el DataFrame procesado.
+    """
+    logger.info(f"Iniciando transformación de datos...\n")
+
+    # Obtiene los datos y si no  puede, lanza error.
+    df = obtener_datos_raw(archivo_raw)
+    if df is None:
+        logger.error("No se pudieron cargar los datos para transformar.\n")
+        return None
+
+    # Elimina los registros nulos y convierte en numérico los registros de cantidad, precio y ventas
+    df = df.dropna(how='all')
+    columnas_num = ['Total_Purchases', 'Amount', 'Total_Amount']
+    for col in columnas_num:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors='coerce')
+
+    # Imputación
+    for col in columnas_num:
+        if col in df.columns and df[col].isnull().any():
+            df[col] = df.groupby('Product_Type')[col].transform(lambda x: x.fillna(x.median()) if not x.median() is None else x)
+            df[col] = df[col].fillna(df[col].median())
+    
+    # Si hay Product_Typeos nulos, solo lo coloca como desconocido
+    if 'Product_Type' in df.columns and df['Product_Type'].isnull().any():
+        df['Product_Type'] = df['Product_Type'].fillna('Unknown')
+
+    # Fechas
+    if 'Date' in df.columns:
+        df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+        df = df.dropna(subset=['Date'])
+        df['Date'] = df['Date'].dt.date
+
+    logger.success(f"Transformación (T) completada. Registros: {len(df)}\n")
+    return df
 
 
+# Ejecución del script
 if __name__ == "__main__":
     app()
