@@ -3,7 +3,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-from pathlib import Path
 from loguru import logger
 import typer
 from salesight.config import ruta_graficos, NOMBRE_DB
@@ -117,7 +116,7 @@ def ejecutar_graficacion(df: pd.DataFrame):
         logger.info("Guardado: tendencia_mensual_ventas.png")
 
 
-    # 5. Top 10 Países por Ventas
+    # 5. Top 5 Países por Ventas
 
     # Valicación de si existen las columnas de país y valor de compra
     if 'Country' in df.columns and 'Total_Amount' in df.columns:
@@ -126,7 +125,7 @@ def ejecutar_graficacion(df: pd.DataFrame):
         paises = df.groupby('Country')['Total_Amount'].sum().nlargest(5).sort_values(ascending=True)
         ax = paises.plot(kind='barh', color='salmon')
         ax.xaxis.set_major_formatter(formateador)
-        plt.title('Top 10 Países con Mayor Facturación', fontsize=14)
+        plt.title('Top 5 Países con Mayor Facturación', fontsize=14)
         plt.xlabel('Ventas Totales ($)')
         plt.ylabel('País')
 

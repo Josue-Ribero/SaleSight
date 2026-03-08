@@ -1,7 +1,6 @@
 # Librerías que se usarán
 import sqlite3
 import pandas as pd
-from pathlib import Path
 from loguru import logger
 from salesight.config import datos_procesados, datos_brutos, NOMBRE_DB
 

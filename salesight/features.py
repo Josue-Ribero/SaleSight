@@ -1,6 +1,5 @@
 # Se importan las librerías que se usarán en la transformación
 import pandas as pd
-from pathlib import Path
 from loguru import logger
 import typer
 from salesight.config import datos_procesados, NOMBRE_DB
