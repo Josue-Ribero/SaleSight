@@ -28,6 +28,8 @@ dependencies = [
     "click",
     "scikit-learn",
     "sqlite3-api; python_version < '3.12'",
+    "streamlit>=1.55.0",
+    "plotly-express>=0.4.1",
 ]
 
 [project.scripts]
