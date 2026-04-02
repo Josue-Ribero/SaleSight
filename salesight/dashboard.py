@@ -36,7 +36,7 @@ st.markdown("Dashboard interactivo para el monitoreo de KPIs y tendencias comerc
 # Cargar datos
 @st.cache_data
 def cargar_datos():
-    ruta_csv = "/Users/josue/Documents/Escritorio/Universidad/ingenieria_de_datos/corte_1/Proyecto/SaleSight/data/processed/processed_data.csv"
+    ruta_csv = "/Users/josue/Library/Mobile Documents/com~apple~CloudDocs/Documents/Escritorio/Universidad/ingenieria_de_datos/corte_1/Proyecto/SaleSight/data/processed/processed_data.csv"
     df = pd.read_csv(ruta_csv)
 
     # Conversión de fechas
